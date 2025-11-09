@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style2.css">
+    <title>근처 CGV 영화관 찾기</title>
+</head>
+<body>
+
+<header> <!--Semantic (header, navigation, footer)-->
+    <div><strong>분당 CGV 영화관 찾기</strong></div>
+</header>
+
+<nav class="clearfix"> <!--Semantic (header, navigation, footer)-->
+    <div class="nav-container">
+        <input type="text" id="station-input" placeholder="역 이름을 입력하세요"> <!-- <input> (1) -->
+        <button onclick="searchNearbyCGV()">찾기</button>
+        <button onclick="goToMainPage()">메인 화면으로 돌아가기</button>
+    </div>
+</nav>
+
+<div class="container">
+    <div id="map"></div>
+</div>
+
+<!-- Kakao 지도 API (1) 불러오기 -->
+<script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=5e156d2ecd0870959a5988b06025c2cb&libraries=services"></script>
+<script>
+    // 지도 표시할 div와 초기 옵션 설정
+    var mapContainer = document.getElementById('map'), 
+        mapOption = { 
+            center: new kakao.maps.LatLng(37.32197224820124, 127.12519889261033), // 초기 중심 좌표
+            level: 3 // 지도의 초기 확대 레벨
+        }; 
+
+    // 지도 생성
+    var map = new kakao.maps.Map(mapContainer, mapOption); 
+
+    // 역 및 CGV 위치 정보
+    var locations = {
+        "서현역": {latitude: 37.3871737, longitude: 127.1225278},
+        "이매역": {latitude: 37.4133082, longitude: 127.1276217},
+        "수내역": {latitude: 37.375, longitude: 127.114},
+        "정자역": {latitude: 37.34067539999999, longitude: 127.1067289},
+        "오리역": {latitude: 37.34067539999999, longitude: 127.108},
+        "미금역": {latitude: 37.350, longitude: 127.109},
+        "야탑역": {latitude: 37.4133082, longitude: 127.1276217},
+        "죽전역": {latitude: 37.3250023, longitude: 127.1081924},
+        "판교역": {latitude: 37.39366639460219, longitude: 127.11233395408848},
+    };
+
+    // 역 이름으로 근처 CGV 위치 찾기 함수
+    function searchNearbyCGV() {
+        var stationName = document.getElementById('station-input').value;
+        
+        // 입력한 역 이름으로 위치 정보 가져오기
+        var location = locations[stationName];
+        if (!location) {
+            alert('입력한 역의 위치를 찾을 수 없습니다.');
+            return;
+        }
+
+        // 해당 위치의 좌표 설정
+        var coords = new kakao.maps.LatLng(location.latitude, location.longitude);
+
+        // 마커 생성 및 지도에 표시
+        var marker = new kakao.maps.Marker({
+            map: map,
+            position: coords
+        });
+
+        // 마커 클릭 시 표시할 인포윈도우 내용 설정
+        var infowindow = new kakao.maps.InfoWindow({
+            content: stationName + " 인근 CGV"
+        });
+        
+        // 마커 클릭 이벤트 추가
+        kakao.maps.event.addListener(marker, 'click', function() {
+            infowindow.open(map, marker);
+        });
+
+        // 지도의 중심을 해당 위치로 이동
+        map.setCenter(coords);
+        // 지도의 확대 레벨 조정
+        map.setLevel(4);
+    }
+
+    // 메인 페이지로 돌아가기 함수
+    function goToMainPage() {
+        window.location.href = "웹프 과제.html"; // 메인 페이지 경로로 이동
+    }
+
+
+    // 네트워크 연결 에러 처리
+    function fetchMovieData(url) {
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 성공적으로 데이터를 받아온 경우 처리하는 코드
+            })
+            .catch(error => {
+                // 네트워크 연결 에러 처리
+                console.error('네트워크 연결 에러:', error);
+                alert('네트워크 연결에 문제가 있습니다.');
+            });
+    }
+
+    //  페이지 로드 시 데이터를 가져오는 함수 호출 ( 카카오맵 API )
+    fetchMovieData('https://dapi.kakao.com/v2/maps/sdk.js?appkey=5e156d2ecd0870959a5988b06025c2cb&libraries=services');
+</script>
+
+<footer> <!--Semantic (header, navigation, footer)-->
+    <p>2024 웹프로그래밍 프로젝트</p>
+</footer>
+
+</body>
+</html>

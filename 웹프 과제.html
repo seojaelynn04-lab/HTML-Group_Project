@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>문화 생활 도움 웹페이지</title>
+</head>
+<body>
+
+<header> <!--Semantic (header, navigation, footer)-->
+    <div style="text-align: center;">
+        <div><strong>문화 생활 도움 웹페이지</strong></div>
+    </div>
+</header>
+
+<nav> <!--Semantic (header, navigation, footer)-->
+    <div class="container">
+        <div class="content">
+            <h2>메인 화면</h2>
+            <div class="buttons clearfix">
+                <a class="button" href="#" onclick="openWindow('영화관 위치.html')">
+                    <strong>영화관 위치 정보</strong>
+                </a>
+                <a class="button" href="#" onclick="openWindow('박스오피스.html')">
+                    <strong>박스오피스 정보</strong>
+                </a>
+                <a class="button" href="#" onclick="openWindow('예술의전당공연정보.html')">
+                    <strong>예술의 전당 공연 정보</strong>
+                </a>
+                <a class="button" href="#" onclick="openWindow('도서추천.html')">
+                    <strong>도서 추천</strong>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<footer> <!--Semantic (header, navigation, footer)-->
+    <p>2024 웹프로그래밍 프로젝트</p>
+</footer>
+
+<script>
+    // 새 창 열기 함수
+    function openWindow(url) {
+        window.open(url, '_blank');
+    }
+
+</script>
+
+</body>
+</html>

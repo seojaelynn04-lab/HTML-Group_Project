@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style3.css">
+    <title>주간/주말 박스오피스 및 영화 정보 조회</title>
+</head>
+<body>
+
+<header> <!--Semantic (header, navigation, footer)-->
+    <div style="text-align: center;">
+        <div><strong>주간/주말 박스오피스 및 영화 정보 조회</strong></div>
+    </div>
+</header>
+
+<div class="container">
+    <!-- 주간 박스오피스와 주말 박스오피스를 조회하는 버튼 -->
+    <button onclick="fetchWeeklyBoxOffice()">주간 박스오피스 조회</button>
+    <button onclick="fetchWeekendBoxOffice()">주말 박스오피스 조회</button>
+
+    <!-- 영화 정보를 표시할 <table> 사용 -->
+    <div id="movie-info">
+        <h2>영화 정보</h2>
+        <table id="movie-table"> 
+            <thead>
+                <tr>
+                    <th>순위</th>
+                    <th>영화 제목</th>
+                    <th>영화 코드</th>
+                </tr>
+            </thead>
+            <tbody id="movie-list"></tbody>
+        </table>
+    </div>
+
+    <!-- 영화 상세 정보를 표시할 <table> 사용 -->
+    <div id="movie-detail" style="display: none;">
+        <h2>영화 상세 정보</h2>
+        <table id="movie-detail-table">
+            <tbody id="movie-detail-info"></tbody>
+        </table>
+    </div>
+
+    <!-- 영화 코드를 입력하고 확인하는 부분 -->
+<nav> <!--Semantic (header, navigation, footer)-->
+    <div>
+        <input type="text" id="movie-code" placeholder="영화 코드를 입력하세요">  <!-- <input> (2)-->
+        <button onclick="fetchMovieDetail()">확인</button>
+        <button onclick="goToMainPage()">메인 화면으로 돌아가기</button>
+    </div>
+</nav>
+
+<script>
+    function fetchWeeklyBoxOffice() {
+        // 주간 박스오피스 정보를 불러오는 함수 호출
+        fetchBoxOffice('weekly');
+    }
+
+    function fetchWeekendBoxOffice() {
+        // 주말 박스오피스 정보를 불러오는 함수 호출
+        fetchBoxOffice('weekend');
+    }
+
+    function fetchBoxOffice(period) {
+        // 주간 또는 주말 기준 날짜 설정
+        var targetDt = (period === 'weekly') ? '20240501' : '20240510'; //올해 5월의 영화 순위
+
+        // 박스오피스 정보를 요청하는 API(2) 불러오기
+        fetch(`http://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchWeeklyBoxOfficeList.json?key=f5eef3421c602c6cb7ea224104795888&targetDt=${targetDt}`)
+        .then(response => response.json())
+        .then(data => {
+            var movies = data.boxOfficeResult.weeklyBoxOfficeList;
+            var movieList = document.getElementById('movie-list');
+            movieList.innerHTML = ''; // 이전 목록 초기화
+
+            // 영화 목록 테이블에 추가
+            movies.forEach((movie, index) => {
+                var row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${movie.movieNm}</td>
+                    <td>${movie.movieCd}</td>
+                `;
+                movieList.appendChild(row);
+            });
+
+            // 영화 정보를 보여주는 부분 화면에 표시
+            document.getElementById('movie-info').style.display = 'block';
+        })
+        .catch(error => {
+            // 데이터를 불러오는 중 에러 발생 시 콘솔에 에러를 출력하고 사용자에게 알림(에러 핸들링)
+            console.error('Error:', error);
+            alert('데이터를 불러오는 중 오류가 발생했습니다.');
+        });
+    }
+
+    function fetchMovieDetail() {
+        var movieCode = document.getElementById('movie-code').value;
+
+        // 입력된 영화 코드가 숫자인지 확인 (에러 핸들링)
+        if (!(/^\d+$/.test(movieCode))) {
+            alert('잘못된 영화 코드입니다. 숫자만 입력하세요.');
+            return; // 유효하지 않은 영화 코드이므로 함수 종료
+        }
+
+        // 영화 상세 정보를 요청하는 API(3) 불러오기
+        fetch(`http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieInfo.json?key=f5eef3421c602c6cb7ea224104795888&movieCd=${movieCode}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.movieInfoResult.movieInfo) {
+                var movieDetailInfo = data.movieInfoResult.movieInfo;
+
+                // 영화 상세 정보 표시
+                var movieDetailDiv = document.getElementById('movie-detail-info');
+                movieDetailDiv.innerHTML = `
+                    <tr><td><strong>영화 제목:</strong></td><td>${movieDetailInfo.movieNm}</td></tr>
+                    <tr><td><strong>상영 시간:</strong></td><td>${movieDetailInfo.showTm}분</td></tr>
+                    <tr><td><strong>영화 유형:</strong></td><td>${movieDetailInfo.typeNm}</td></tr>
+                    <tr><td><strong>개봉일:</strong></td><td>${movieDetailInfo.openDt}</td></tr>
+                `;
+
+                // 영화 상세 정보 제공
+                document.getElementById('movie-detail').style.display = 'block';
+            } else {
+                alert('잘못된 영화 코드입니다. 다시 입력하세요.');
+            }
+        })
+        .catch(error => {
+            // 에러가 발생하면 콘솔에 에러를 출력하고 사용자에게 알림
+            console.error('Error:', error);
+            alert('영화 정보를 불러오는 중 오류가 발생했습니다.');
+        });
+    }
+
+    function goToMainPage() {
+        window.location.href = "웹프 과제.html"; // 메인 페이지의 경로로 이동
+    }
+
+    // 네트워크 연결 에러 처리
+    function fetchMovieData(url) {
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 성공적으로 데이터를 받아온 경우 처리하는 코드
+            })
+            .catch(error => {
+                // 네트워크 연결 에러 처리
+                console.error('네트워크 연결 에러:', error);
+                alert('네트워크 연결에 문제가 있습니다.');
+            });
+    }
+
+    //  페이지 로드 시 데이터를 가져오는 함수 호출 ( KOBIS API )
+    fetchMovieData('http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchWeeklyBoxOfficeList.json');
+</script>
+
+<footer> <!--Semantic (header, navigation, footer)-->
+    <p>2024 웹프로그래밍 프로젝트</p>
+</footer>
+
+</body>
+</html>

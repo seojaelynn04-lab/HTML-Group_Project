@@ -1,0 +1,85 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #ebddea;
+}
+
+/* 네모 상자 버튼 스타일 */
+.button {
+    display: inline-block;
+    padding: 40px 40px;
+    background-color: #abbce8;
+    color: #ffffff; 
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px;
+    box-sizing: border-box;
+    text-align: center;
+    position: relative;
+    width: calc(100% - 20px); 
+    font-size: 1.5em;
+}
+
+/* 헤더 스타일 */
+header {
+    text-align: center;
+    background-color: #FFFFB5;
+    color: #333;
+    padding: 40px 20px;
+    margin: 0 20px;
+    border-radius: 10px;
+    max-width: 1000px; 
+    margin: 0 auto;
+    font-size: 2em;
+}
+
+/* 레이아웃 스타일 */
+.container {
+    width: 90%;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+footer {
+    text-align: center;
+    margin-top: 20px; 
+}
+
+/* 반응형 스타일 */
+@media screen and (min-width: 901px) {
+    .container {
+        width: 1000px; /* 헤더 및 버튼 크기에 맞게 조정 */
+    }
+    .button {
+        width: calc(50% - 20px);
+    }
+}
+
+.buttons {
+    overflow: hidden; /* 내부 float 요소들을 감싸기 위해 사용 */
+}
+
+.buttons .button {
+    float: left;
+}
+
+/* Pseudo-class를 사용하여 버튼에 호버 효과(색깔 변환) 추가 */
+.button:hover {
+    background-color: #8a9ee8;
+}
+
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* 태블릿 및 모바일 환경 */
+@media screen and (max-width: 1060px) {
+    .button {
+        width: calc(100% - 20px); /* 모바일 환경에서는 버튼을 한 줄에 하나씩 표시 */
+    }
+}
